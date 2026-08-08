@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es" class="dark scroll-smooth bg-black text-white">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIM | High-End Urban Jewelry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        luxBlack: '#020202',
+                        luxDark: '#0a0a0a',
+                        luxBorder: '#1a1a1a',
+                        luxDim: '#777777',
+                        luxAccent: '#ffffff'
+                    },
+                    fontFamily: {
+                        display: ['Outfit', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+                            '50%': { opacity: '0.6', transform: 'scale(1.1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020202; overflow-x: hidden; }
+        h1, h2, h3, h4, .font-display { font-family: 'Outfit', sans-serif; }
+        
+        /* Glassmorphism */
+        .glass-nav {
+            background: rgba(2, 2, 2, 0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: padding 0.3s ease, background 0.3s ease;
+        }
+        
+        .bento-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .bento-card:hover {
+            border-color: rgba(255,255,255,0.15);
+            transform: scale(0.99);
+            box-shadow: inset 0 0 40px rgba(255,255,255,0.02);
+        }
+
+        /* Lookbook Hotspot */
+        .hotspot {
+            position: absolute;
+            width: 14px; height: 14px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255,255,255,0.8);
+            z-index: 10;
+        }
+        .hotspot::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            animation: pulseGlow 2s infinite;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #020202; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+        .loader {
+            width: 48px; height: 48px;
+            border: 2px solid #333;
+            border-bottom-color: #fff;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="selection:bg-white selection:text-black">
+
+    <!-- Navbar Interactivo -->
+    <header id="navbar" class="fixed top-0 w-full z-50 glass-nav py-6 px-8">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 id="logo" class="text-3xl font-black tracking-[0.2em] uppercase transition-all duration-300">LIM</h1>
+            <a href="https://wa.me/59176989322" target="_blank" class="text-xs font-display uppercase tracking-widest font-bold border border-white/20 px-6 py-3 hover:bg-white hover:text-black transition-colors duration-300 rounded-full">
+                Asesoría Privada
+            </a>
+        </div>
+    </header>
+
+    <!-- Parallax Hero -->
+    <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <!-- Fondo Cinematico -->
+        <div class="absolute inset-0 z-0">
+            <!-- Usamos un placeholder cinemático de joyería de acero (Unsplash) -->
+            <img src="https://images.unsplash.com/photo-1611099238380-60b642a8b941?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover opacity-30 object-center parallax-bg" alt="Joyería">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-luxBlack/50 to-luxBlack"></div>
+        </div>
+        
+        <div class="relative z-10 text-center px-6 mt-16">
+            <h2 class="text-5xl md:text-8xl font-black font-display tracking-tighter uppercase mb-6 drop-shadow-2xl animate-fade-in-up" style="animation-delay: 0.1s;">
+                Selección <br><span class="text-transparent bg-clip-text bg-gradient-to-b from-white to-luxDim">Urbana</span>
+            </h2>
+            <p class="text-luxDim max-w-lg mx-auto text-sm md:text-base tracking-widest uppercase animate-fade-in-up" style="animation-delay: 0.3s;">
+                Las mejores piezas de acero para tu estilo.
+            </p>
+        </div>
+    </section>
+
+    <!-- Bento Box Grid (Catálogo) -->
+    <section class="max-w-7xl mx-auto px-6 py-20 -mt-20 relative z-20">
+        
+        <div id="loader" class="flex justify-center items-center py-20">
+            <span class="loader"></span>
+        </div>
+
+        <!-- Este grid será poblado por JS -->
+        <div id="bento-grid" class="hidden grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[300px]">
+            <!-- Inyectado via JS -->
+        </div>
+
+    </section>
+
+    <!-- Interactive Lookbook -->
+    <section class="max-w-7xl mx-auto px-6 py-20">
+        <h3 class="text-4xl font-black font-display uppercase tracking-tighter mb-10 text-center">Lookbook</h3>
+        
+        <div class="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden bento-card">
+            <!-- Modelo Urbano (Placeholder de Unsplash) -->
+            <img src="https://images.unsplash.com/photo-1596703901763-7de4fc3372c3?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover opacity-70" alt="Lookbook LIM">
+            
+            <!-- Hotspot Interactivo -->
+            <div class="hotspot top-[45%] left-[50%] group" title="Ver Cadena Cubana">
+                <div class="absolute top-6 left-1/2 -translate-x-1/2 bg-white text-black px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Comprar el Look
+                </div>
+            </div>
+            
+            <div class="absolute bottom-10 left-10">
+                <h4 class="text-white text-2xl font-bold uppercase tracking-widest">Street Edition</h4>
+                <p class="text-luxDim text-sm">Colección Invierno 2026</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Premium -->
+    <footer class="bg-luxDark border-t border-luxBorder mt-20 py-20">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div class="md:col-span-2">
+                <h1 class="text-4xl font-black tracking-[0.2em] uppercase mb-6">LIM</h1>
+                <p class="text-luxDim text-sm max-w-sm leading-loose">
+                    Traemos a Bolivia la mejor selección de joyería urbana. Piezas de acero inoxidable cuidadosamente elegidas para el hombre contemporáneo.
+                </p>
+            </div>
+            
+            <div>
+                <h4 class="font-display font-bold uppercase tracking-widest text-sm mb-6 text-white/80">Experiencia</h4>
+                <ul class="text-luxDim text-xs space-y-4 uppercase tracking-wider">
+                    <li><a href="#" class="hover:text-white transition-colors">Envíos a todo Bolivia</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Garantía de Acero</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Devoluciones</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4 class="font-display font-bold uppercase tracking-widest text-sm mb-6 text-white/80">Social</h4>
+                <ul class="text-luxDim text-xs space-y-4 uppercase tracking-wider">
+                    <li><a href="#" class="hover:text-white transition-colors flex items-center gap-2">Instagram</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors flex items-center gap-2">TikTok</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Product Modal (Quick View) -->
+    <div id="product-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div id="modal-backdrop" class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity opacity-0" onclick="cerrarModal()"></div>
+        
+        <!-- Modal Content -->
+        <div id="modal-content" class="relative w-full max-w-4xl bg-luxDark border border-white/10 rounded-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] scale-95 opacity-0 transition-all duration-300 shadow-[0_0_50px_rgba(255,255,255,0.05)]">
+            <!-- Botón Cerrar -->
+            <button onclick="cerrarModal()" class="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            <!-- Imagen Izquierda -->
+            <div class="w-full md:w-1/2 h-[40vh] md:h-[70vh] bg-luxBlack">
+                <img id="modal-img" src="" alt="Producto" class="w-full h-full object-cover">
+            </div>
+
+            <!-- Detalles Derecha -->
+            <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-gradient-to-br from-luxDark to-black">
+                <div class="text-[10px] uppercase tracking-widest text-luxDim mb-4 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-white/30 rounded-full"></span> 
+                    Acero Premium Inoxidable
+                </div>
+                <h2 id="modal-title" class="text-3xl md:text-5xl font-black font-display uppercase tracking-tight mb-4">Título</h2>
+                <p id="modal-price" class="text-xl font-light text-luxDim mb-8">Precio</p>
+                <p id="modal-desc" class="text-sm leading-relaxed text-white/60 mb-10 border-l border-white/10 pl-4">Descripción</p>
+                
+                <button id="modal-buy-btn" class="w-full border border-white bg-white text-black hover:bg-transparent hover:text-white text-xs uppercase tracking-widest font-bold py-5 transition-all duration-300">
+                    Comprar vía WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parallax Script & Scroll Effects -->
+    <script>
+        window.addEventListener('scroll', () => {
+            // Navbar Shrink
+            const nav = document.getElementById('navbar');
+            const logo = document.getElementById('logo');
+            if (window.scrollY > 50) {
+                nav.classList.replace('py-6', 'py-3');
+                logo.classList.replace('text-3xl', 'text-xl');
+            } else {
+                nav.classList.replace('py-3', 'py-6');
+                logo.classList.replace('text-xl', 'text-3xl');
+            }
+
+            // Parallax Background
+            const bg = document.querySelector('.parallax-bg');
+            if(bg) bg.style.transform = `translateY(${window.scrollY * 0.3}px)`;
+        });
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
