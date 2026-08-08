@@ -7,6 +7,7 @@ const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Variable global para guardar todos los productos y poder filtrarlos sin llamar a la BD de nuevo
 let todosLosProductos = [];
+let cmsConfig = null;
 
 const formatMoney = (amount) => {
     return new Intl.NumberFormat('es-BO', { style: 'currency', currency: 'BOB' }).format(amount);
@@ -73,8 +74,29 @@ function generarBentoQuote() {
     `;
 }
 
-async function cargarProductos() {
+async function cargarDataInicial() {
     try {
+        // Cargar Configuración CMS
+        const { data: configData } = await _supabase
+            .from('configuracion_web')
+            .select('*')
+            .limit(1)
+            .single();
+            
+        if (configData) {
+            cmsConfig = configData;
+            aplicarCMS(configData);
+            
+            // Si está en mantenimiento, detener la carga y mostrar pantalla
+            if (configData.maintenance_mode) {
+                document.getElementById('maintenance-screen').classList.remove('hidden');
+                document.getElementById('loader').classList.add('hidden');
+                document.body.style.overflow = 'hidden';
+                return; 
+            }
+        }
+
+        // Cargar Productos
         const { data: productos, error } = await _supabase
             .from('productos')
             .select('*')
@@ -94,10 +116,51 @@ async function cargarProductos() {
 
         todosLosProductos = productos;
         renderizarGrid(productos);
+        generarCategoriasDinamicas();
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error al cargar datos:', error);
     }
+}
+
+function aplicarCMS(config) {
+    // Top Banner
+    const banner = document.getElementById('top-banner');
+    if (config.banner_active && config.banner_text) {
+        document.getElementById('banner-text').textContent = config.banner_text;
+        banner.classList.remove('hidden');
+    } else {
+        banner.classList.add('hidden');
+    }
+
+    // Social Links
+    const instaLinks = document.querySelectorAll('.social-insta');
+    instaLinks.forEach(a => a.href = config.instagram_url || '#');
+    
+    const tiktokLinks = document.querySelectorAll('.social-tiktok');
+    tiktokLinks.forEach(a => a.href = config.tiktok_url || '#');
+}
+
+// Categorías Dinámicas
+function generarCategoriasDinamicas() {
+    const contenedor = document.getElementById('nav-categories');
+    if (!contenedor) return;
+    
+    // Obtener categorías únicas, ignorando vacías
+    const categorias = new Set();
+    todosLosProductos.forEach(p => {
+        if (p.categoria) categorias.add(p.categoria.toLowerCase());
+    });
+    
+    let html = `<button onclick="filtrarCatalogo('Todos')" class="filter-btn bg-white text-black px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-white transition-all">Todos</button>`;
+    
+    categorias.forEach(cat => {
+        // Capitalizar primera letra
+        const nombreCat = cat.charAt(0).toUpperCase() + cat.slice(1);
+        html += `<button onclick="filtrarCatalogo('${cat}')" class="filter-btn bg-transparent text-luxDim hover:text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-transparent hover:border-white/20 transition-all">${nombreCat}</button>`;
+    });
+    
+    contenedor.innerHTML = html;
 }
 
 // Función para pintar los productos en la cuadrícula
@@ -165,8 +228,9 @@ function abrirLookbookModal() {
 }
 
 function comprarPorWhatsApp(nombreProducto, precio) {
+    const telefono = (cmsConfig && cmsConfig.whatsapp_phone) ? cmsConfig.whatsapp_phone : WHATSAPP_NUMBER;
     const mensaje = encodeURIComponent(`¡Hola LIM! Estoy interesado en adquirir una pieza de su selección.\n\nJoya: *${nombreProducto}*\nInversión: *${formatMoney(precio)}*\n\nPor favor, indíquenme disponibilidad y métodos de envío seguro.`);
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${mensaje}`, '_blank');
+    window.open(`https://wa.me/${telefono}?text=${mensaje}`, '_blank');
 }
 
 function abrirModal(nombre, precio, descripcion, imagen) {
@@ -209,4 +273,4 @@ function cerrarModal() {
     }, 300);
 }
 
-cargarProductos();
+cargarDataInicial();
