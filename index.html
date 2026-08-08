@@ -140,8 +140,7 @@
     <section class="relative h-screen flex items-center justify-center overflow-hidden">
         <!-- Fondo Cinematico -->
         <div class="absolute inset-0 z-0">
-            <!-- Usamos un placeholder cinemático de joyería de acero (Unsplash) -->
-            <img src="https://images.unsplash.com/photo-1611099238380-60b642a8b941?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover opacity-30 object-center parallax-bg" alt="Joyería">
+            <div class="absolute inset-0 w-full h-full opacity-30 parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1611099238380-60b642a8b941?q=80&w=2000&auto=format&fit=crop'); background-size: cover; background-position: center; background-color: #020202;"></div>
             <div class="absolute inset-0 bg-gradient-to-b from-transparent via-luxBlack/50 to-luxBlack"></div>
         </div>
         
@@ -171,15 +170,14 @@
 
     </section>
 
-    <!-- Interactive Lookbook -->
+    <!-- Interactive Lookbook (Oculto temporalmente a petición del usuario) -->
+    <!--
     <section class="max-w-7xl mx-auto px-6 py-20">
         <h3 class="text-4xl font-black font-display uppercase tracking-tighter mb-10 text-center">Lookbook</h3>
         
         <div class="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden bento-card">
-            <!-- Modelo Urbano (Placeholder de Unsplash) -->
-            <img src="https://images.unsplash.com/photo-1596703901763-7de4fc3372c3?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover opacity-70" alt="Lookbook LIM">
+            <div class="absolute inset-0 w-full h-full opacity-70" style="background-image: url('https://images.unsplash.com/photo-1596703901763-7de4fc3372c3?q=80&w=2000&auto=format&fit=crop'); background-size: cover; background-position: center; background-color: #111;"></div>
             
-            <!-- Hotspot Interactivo -->
             <div class="hotspot top-[45%] left-[50%] group" title="Ver Cadena Cubana" onclick="abrirLookbookModal()">
                 <div class="absolute top-6 left-1/2 -translate-x-1/2 bg-white text-black px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                     Comprar el Look
@@ -192,6 +190,7 @@
             </div>
         </div>
     </section>
+    -->
 
     <!-- Footer Premium -->
     <footer class="bg-luxDark border-t border-luxBorder mt-20 py-20">
