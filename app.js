@@ -5,6 +5,9 @@ const WHATSAPP_NUMBER = '59176989322';
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Variable global para guardar todos los productos y poder filtrarlos sin llamar a la BD de nuevo
+let todosLosProductos = [];
+
 const formatMoney = (amount) => {
     return new Intl.NumberFormat('es-BO', { style: 'currency', currency: 'BOB' }).format(amount);
 };
@@ -89,24 +92,75 @@ async function cargarProductos() {
             return;
         }
 
-        let html = '';
-        productos.forEach((prod, index) => {
-            // El primero es el grande
-            if (index === 0) {
-                html += generarBentoCard(prod, true);
-            } else if (index === 2) {
-                // Insertamos una frase de la marca después de 2 productos
-                html += generarBentoCard(prod, false);
-                html += generarBentoQuote();
-            } else {
-                html += generarBentoCard(prod, false);
-            }
-        });
-
-        grid.innerHTML = html;
+        todosLosProductos = productos;
+        renderizarGrid(productos);
 
     } catch (error) {
         console.error('Error:', error);
+    }
+}
+
+// Función para pintar los productos en la cuadrícula
+function renderizarGrid(listaProductos) {
+    const grid = document.getElementById('bento-grid');
+    if (listaProductos.length === 0) {
+        grid.innerHTML = `<p class="col-span-full text-center text-luxDim py-20">No hay piezas en esta categoría.</p>`;
+        return;
+    }
+
+    let html = '';
+    listaProductos.forEach((prod, index) => {
+        // En computadora el primero es grande. En celular, todos son iguales (usamos clases Tailwind para controlar esto)
+        if (index === 0 && listaProductos === todosLosProductos) {
+            html += generarBentoCard(prod, true);
+        } else if (index === 2 && listaProductos === todosLosProductos) {
+            html += generarBentoCard(prod, false);
+            html += generarBentoQuote();
+        } else {
+            html += generarBentoCard(prod, false);
+        }
+    });
+    grid.innerHTML = html;
+}
+
+// Lógica de Filtros
+function filtrarCatalogo(categoriaSeleccionada) {
+    // Estilizar botones
+    const botones = document.querySelectorAll('.filter-btn');
+    botones.forEach(btn => {
+        if (btn.textContent.trim() === categoriaSeleccionada) {
+            btn.classList.replace('bg-transparent', 'bg-white');
+            btn.classList.replace('text-luxDim', 'text-black');
+            btn.classList.replace('border-luxBorder', 'border-white');
+        } else {
+            btn.classList.replace('bg-white', 'bg-transparent');
+            btn.classList.replace('text-black', 'text-luxDim');
+            btn.classList.replace('border-white', 'border-luxBorder');
+        }
+    });
+
+    if (categoriaSeleccionada === 'Todos') {
+        renderizarGrid(todosLosProductos);
+    } else {
+        const filtrados = todosLosProductos.filter(p => (p.categoria || '').toLowerCase().includes(categoriaSeleccionada.toLowerCase()));
+        renderizarGrid(filtrados);
+    }
+}
+
+// Lookbook Interactivo
+function abrirLookbookModal() {
+    // Toma el producto estrella (el primero) o uno específico para vender
+    const productoEstrella = todosLosProductos[0];
+    if (productoEstrella) {
+        let imageUrl = `https://images.unsplash.com/photo-1605100804763-247f66150ce8?q=80&w=1000&auto=format&fit=crop`;
+        if (productoEstrella.imagen_url) {
+            imageUrl = productoEstrella.imagen_url.startsWith('http') 
+                ? productoEstrella.imagen_url 
+                : `${SUPABASE_URL}/storage/v1/object/public/productos/${productoEstrella.imagen_url}`;
+        }
+        const desc = (productoEstrella.descripcion || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const nombre = productoEstrella.nombre.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        abrirModal(nombre, productoEstrella.precio_venta, desc, imageUrl);
     }
 }
 
