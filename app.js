@@ -28,9 +28,11 @@ function generarBentoCard(producto, isFeature) {
     
     const desc = (producto.descripcion || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
     const nombre = producto.nombre.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const videoInsta = (producto.video_instagram || '');
+    const videoTiktok = (producto.video_tiktok || '');
     
     return `
-        <article class="bento-card relative group cursor-pointer ${gridClass}" onclick="abrirModal('${nombre}', ${producto.precio_venta}, '${desc}', '${imageUrl}')">
+        <article class="bento-card relative group cursor-pointer ${gridClass}" onclick="abrirModal('${nombre}', ${producto.precio_venta}, '${desc}', '${imageUrl}', '${videoInsta}', '${videoTiktok}')">
             <!-- Imagen de fondo -->
             <img src="${imageUrl}" alt="${producto.nombre}" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700">
             
@@ -223,7 +225,9 @@ function abrirLookbookModal() {
         }
         const desc = (productoEstrella.descripcion || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         const nombre = productoEstrella.nombre.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        abrirModal(nombre, productoEstrella.precio_venta, desc, imageUrl);
+        const videoInsta = (productoEstrella.video_instagram || '');
+        const videoTiktok = (productoEstrella.video_tiktok || '');
+        abrirModal(nombre, productoEstrella.precio_venta, desc, imageUrl, videoInsta, videoTiktok);
     }
 }
 
@@ -233,13 +237,29 @@ function comprarPorWhatsApp(nombreProducto, precio) {
     window.open(`https://wa.me/${telefono}?text=${mensaje}`, '_blank');
 }
 
-function abrirModal(nombre, precio, descripcion, imagen) {
+function abrirModal(nombre, precio, descripcion, imagen, videoInsta, videoTiktok) {
     document.getElementById('modal-img').src = imagen;
     document.getElementById('modal-title').textContent = nombre;
     document.getElementById('modal-price').textContent = formatMoney(precio);
     document.getElementById('modal-desc').textContent = descripcion || 'Pieza exclusiva de diseño urbano, forjada para resistir.';
     
     document.getElementById('modal-buy-btn').onclick = () => comprarPorWhatsApp(nombre, precio);
+
+    const btnInsta = document.getElementById('modal-insta-btn');
+    if (videoInsta && videoInsta.length > 5) {
+        btnInsta.classList.remove('hidden');
+        btnInsta.onclick = () => window.open(videoInsta, '_blank');
+    } else {
+        btnInsta.classList.add('hidden');
+    }
+
+    const btnTiktok = document.getElementById('modal-tiktok-btn');
+    if (videoTiktok && videoTiktok.length > 5) {
+        btnTiktok.classList.remove('hidden');
+        btnTiktok.onclick = () => window.open(videoTiktok, '_blank');
+    } else {
+        btnTiktok.classList.add('hidden');
+    }
 
     const modal = document.getElementById('product-modal');
     const backdrop = document.getElementById('modal-backdrop');
