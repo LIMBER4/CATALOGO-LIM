@@ -246,19 +246,31 @@ function abrirModal(nombre, precio, descripcion, imagen, videoInsta, videoTiktok
     document.getElementById('modal-buy-btn').onclick = () => comprarPorWhatsApp(nombre, precio);
 
     const btnInsta = document.getElementById('modal-insta-btn');
+    const btnTiktok = document.getElementById('modal-tiktok-btn');
+    const socialContainer = document.getElementById('modal-social-container');
+
+    let hasMedia = false;
+
     if (videoInsta && videoInsta.length > 5) {
         btnInsta.classList.remove('hidden');
         btnInsta.onclick = () => window.open(videoInsta, '_blank');
+        hasMedia = true;
     } else {
         btnInsta.classList.add('hidden');
     }
 
-    const btnTiktok = document.getElementById('modal-tiktok-btn');
     if (videoTiktok && videoTiktok.length > 5) {
         btnTiktok.classList.remove('hidden');
         btnTiktok.onclick = () => window.open(videoTiktok, '_blank');
+        hasMedia = true;
     } else {
         btnTiktok.classList.add('hidden');
+    }
+
+    if (hasMedia) {
+        socialContainer.classList.remove('hidden');
+    } else {
+        socialContainer.classList.add('hidden');
     }
 
     const modal = document.getElementById('product-modal');
