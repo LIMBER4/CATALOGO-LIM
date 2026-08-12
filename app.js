@@ -67,10 +67,11 @@ function generarBentoCard(producto, isFeature) {
 
 // Bloque de texto para relleno del Bento Grid
 function generarBentoQuote() {
+    const frase = (cmsConfig && cmsConfig.frase_bento) ? cmsConfig.frase_bento : '"Curaduría urbana. <span class="text-white">Estilo impecable.</span>"';
     return `
         <article class="bento-card col-span-1 md:col-span-2 row-span-1 bg-luxDark flex items-center justify-center p-8 text-center border-luxBorder">
             <h3 class="text-2xl md:text-3xl font-display font-bold uppercase tracking-tighter text-luxDim">
-                "Curaduría urbana. <span class="text-white">Estilo impecable.</span>"
+                ${frase}
             </h3>
         </article>
     `;
@@ -241,7 +242,9 @@ function abrirModal(nombre, precio, descripcion, imagen, videoInsta, videoTiktok
     document.getElementById('modal-img').src = imagen;
     document.getElementById('modal-title').textContent = nombre;
     document.getElementById('modal-price').textContent = formatMoney(precio);
-    document.getElementById('modal-desc').textContent = descripcion || 'Pieza exclusiva de diseño urbano, forjada para resistir.';
+    
+    const frasePorDefecto = (cmsConfig && cmsConfig.frase_modal) ? cmsConfig.frase_modal : 'Pieza exclusiva de diseño urbano, forjada para resistir.';
+    document.getElementById('modal-desc').innerHTML = descripcion || frasePorDefecto;
     
     document.getElementById('modal-buy-btn').onclick = () => comprarPorWhatsApp(nombre, precio);
 
